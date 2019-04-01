@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Banker.Contexts;
 using Banker.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Banker.Repositories
 {
+    // CRUD operations for transcations
     public class TransactionRepository : ITransactionRepository
     {
         private readonly BankLedgerContext _context;
@@ -16,6 +19,7 @@ namespace Banker.Repositories
             _context = context;
         }
 
+        // Create
         public Transactions CreateTransaction(Transactions transaction)
         {
             // Create a new transaction.
@@ -23,7 +27,7 @@ namespace Banker.Repositories
 
             // Update the account related to the Transaction.
             var account = _context.Accounts.Find(transaction.AccountId);
-            account.transactions.Add(transaction);
+            account.Transactions.Add(transaction);
             _context.Accounts.Update(account);
 
             _context.SaveChanges();
@@ -31,14 +35,17 @@ namespace Banker.Repositories
             return transaction;
         }
 
-        public bool DeleteTransaction(Account account, int id)
+        // Delete 
+        public bool DeleteTransaction(int id)
         {
-            // Find account related to transaction
-            var accountFound = _context.Accounts.Find(account);
+            // Find transaction
             var transaction = _context.Transactions.Find(id);
 
+            // Find related account
+            var account = _context.Accounts.Find(transaction.AccountId);
+
             // If account or transaction is null return false
-            if(accountFound == null || transaction == null)
+            if(account == null || transaction == null)
             {
                 return false;
             }
@@ -48,37 +55,25 @@ namespace Banker.Repositories
                 _context.Transactions.Remove(transaction);
 
                 // Remove transaction history from account
-                accountFound.transactions.Remove(transaction);
-                _context.Accounts.Update(accountFound);
+                account.Transactions.Remove(transaction);
+                _context.Accounts.Update(account);
+                _context.SaveChanges();
                 return true;
             }
         }
 
+        // Read all
         public IEnumerable<Transactions> GetAllTransactions()
         {
             return _context.Transactions.ToList();
         }
 
-        public IEnumerable<Transactions> GetAllTransactionsForAccount(Account account)
+        // Read
+        public Transactions GetTransaction(int id)
         {
-            var accountFound = _context.Accounts.Find(account.AccountId);
-
-            if(accountFound == null)
-            {
-                return null;
-            }
-            else
-            {
-                return accountFound.transactions;
-            }
-        }
-
-        public Transactions GetTransaction(Account account, int id)
-        {
-            var accountFound = _context.Accounts.Find(account);
             var transactionFound = _context.Transactions.Find(id);
 
-            if(accountFound == null || transactionFound == null)
+            if(transactionFound == null)
             {
                 return null;
             }
@@ -86,8 +81,20 @@ namespace Banker.Repositories
             return transactionFound;
         }
 
+        public bool TransactionExists(int id)
+        {
+            if (_context.Transactions.Find(id) == null)
+            {
+                return false;
+            }
+            return true;
+            
+        }
+
+        // Update
         public Transactions UpdateTransaction(int id, string transactionStatus)
         {
+            // Find the transaction and account
             var transactionFound = _context.Transactions.Find(id);
             var accountFound = _context.Accounts.Find(transactionFound.AccountId);
 
@@ -96,12 +103,15 @@ namespace Banker.Repositories
                 return null;
             }
 
+            // Update the transactions
             transactionFound.TransactionStatus = transactionStatus;
-            accountFound.transactions.Find(x => x.TransactionId.Equals(id)).TransactionStatus = transactionStatus;
+            accountFound.Transactions.Find(x => x.TransactionId.Equals(id)).TransactionStatus = transactionStatus;
 
+            // Update the lists.
             _context.Transactions.Update(transactionFound);
             _context.Accounts.Update(accountFound);
 
+            _context.SaveChanges();
             return transactionFound;
         }
     }

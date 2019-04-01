@@ -25,6 +25,6 @@ namespace Banker.Models
         public double Balance { get; set; }
 
         // History of transactions 
-        public List<Transactions> transactions { get; set; }
+        public List<Transactions> Transactions { get; set; }
     }
 }

@@ -14,44 +14,56 @@ namespace Banker.Controllers
     public class ManagerAccountController : ControllerBase
     {
         private readonly BankLedgerContext _context;
-        private readonly ITransactionService _transactionService;
-        private readonly IAccountService _accountService;
+        private readonly IBankService _bankService;
 
-        public ManagerAccountController(BankLedgerContext context, ITransactionService transactionService, IAccountService accountService)
+        public ManagerAccountController(BankLedgerContext context, IBankService bankService)
         {
             _context = context;
-            _transactionService = transactionService;
-            _accountService = accountService;
+            _bankService = bankService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Account>> CreateAccount([FromBody] Account account)
+        public ActionResult<Account> CreateAccount([FromBody] Account account)
         {
-            return null;
+            var accountCreated = _bankService.CreateAccount(account);
+            if (accountCreated == null)
+            {
+                return BadRequest();
+            }
+            return accountCreated;
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteAccount(int id)
+        [HttpDelete("{id}")]
+        public ActionResult<bool> DeleteAccount(int id)
         {
-            return null;
+            var accountDeleted = _bankService.DeleteAccount(id);
+            if(!accountDeleted)
+            {
+                return BadRequest();
+            }
+            return accountDeleted;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Transactions>>> ViewBankTransactionHistory()
+        [HttpGet("transactions")]
+        public ActionResult<IEnumerable<Transactions>> ViewBankTransactionHistory()
         {
-            return null;
+            var fullTransactionHistory = _bankService.GetAllTransactions();
+            if(fullTransactionHistory == null)
+            {
+                return BadRequest();
+            }
+            return fullTransactionHistory.ToList();
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> ViewAllAccounts()
+        [HttpGet("accounts")]
+        public ActionResult<IEnumerable<Account>> ViewAllAccounts()
         {
-            return null;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Transactions>>> ViewAllTransactionsForAccount(Account account)
-        {
-            return null;
+            var allAccounts = _bankService.GetAccounts();
+            if(allAccounts == null)
+            {
+                return BadRequest();
+            }
+            return allAccounts.ToList();
         }
     }
 }

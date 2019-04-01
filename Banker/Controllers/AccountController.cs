@@ -16,44 +16,69 @@ namespace Banker.Controllers
     public class AccountController : ControllerBase
     {
         private readonly BankLedgerContext _context;
-        private readonly ITransactionService _transactionService;
-        private readonly IAccountService _accountService;
+        private readonly IBankService _bankService;
 
-        public AccountController(BankLedgerContext context, ITransactionService transactionService, IAccountService accountService)
+        public AccountController(BankLedgerContext context, IBankService bankService)
         {
             _context = context;
-            _transactionService = transactionService;
-            _accountService = accountService;
+            _bankService = bankService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Account>> Login()
+        public Task<ActionResult<Account>> Login()
         {
             return null;
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Logout()
+        public Task<IActionResult> Logout()
         {
             return null;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Transactions>>> ViewTransactionHistory()
+        [HttpPatch("withdraw/{id}")]
+        public ActionResult<Account> WithFromAccount(int accountId, [FromBody] Transactions transaction)
         {
-            return null;
+            var withdrawCreated = _bankService.WithdrawlFromAccount(accountId, transaction);
+            if(withdrawCreated == null)
+            {
+                return BadRequest();
+            }
+            return withdrawCreated;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Transactions>> CreateTransaction(Transactions transactions)
+        [HttpPatch("deposit/{id}")]
+        public ActionResult<Account> DepositIntoAccount(int accountId, [FromBody] Transactions transaction)
         {
-            return null;
+            var depositCreated = _bankService.DepositIntoAccount(accountId, transaction);
+            if(depositCreated == null)
+            {
+                return BadRequest();
+            }
+            return depositCreated;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<Account>> ViewAccountInformation()
+        [HttpGet("{id}")]
+        public ActionResult<Account> ViewAccountInformation(int id)
         {
-            return null;
+            var accountFound = _bankService.GetAccount(id);
+            if(accountFound == null)
+            {
+                return NotFound();
+            }
+
+            return accountFound;
+        }
+
+        [HttpGet("transactions/{id}")]
+        public ActionResult<IEnumerable<Transactions>> ViewTransactionHistoryForAccount(int accountId)
+        {
+            var transactions = _bankService.GetAllTransactionsForAccount(accountId);
+            if(transactions == null)
+            {
+                return NotFound();
+            }
+            return transactions.ToList();
         }
     }
 }

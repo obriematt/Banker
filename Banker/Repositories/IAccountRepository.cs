@@ -1,4 +1,5 @@
 ﻿using Banker.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace Banker.Repositories
         Account GetAccount(int id);
         Account CreateAccount(Account account);
         bool DeleteAccount(int id);
-        bool UpdateAccount(Account account);
+        Account UpdateAccount(Account account);
     }
 }

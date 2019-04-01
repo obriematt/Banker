@@ -1,4 +1,5 @@
 ﻿using Banker.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,11 @@ namespace Banker.Repositories
 {
     public interface ITransactionRepository
     {
+        bool TransactionExists(int id);
         IEnumerable<Transactions> GetAllTransactions();
-        IEnumerable<Transactions> GetAllTransactionsForAccount(Account account);
-        Transactions GetTransaction(Account accoount, int id);
+        Transactions GetTransaction(int id);
         Transactions CreateTransaction(Transactions transaction);
-        bool DeleteTransaction(Account account, int id);
-        Transactions UpdateTransaction(int id);
+        bool DeleteTransaction(int id);
+        Transactions UpdateTransaction(int id, string transcationStatus);
     }
 }

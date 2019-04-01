@@ -1,5 +1,6 @@
 ﻿using Banker.Models;
 using Banker.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace Banker.Services
 {
-    public class BankService : ITransactionService, IAccountService
+    public class BankService : IBankService
     {
+        // Necessary repos for data access.
         private readonly IAccountRepository _accountRepository;
         private readonly ITransactionRepository _transactionRepository;
 
@@ -18,39 +20,45 @@ namespace Banker.Services
             _transactionRepository = transactionRepository;
         }
 
-        public bool AccountExists(int id)
-        {
-            return _accountRepository.AccountExists(id);
-        }
-
-        public Account CreateAccount(Account account)
-        {
-            return _accountRepository.CreateAccount(account);
-        }
+        // Transaction portion of BankService.
 
         public Transactions CreateTransaction(Transactions transaction)
         {
+            if (!_transactionRepository.TransactionExists(transaction.TransactionId)){
+                // The transaction already exists, can't create.
+                return null;
+            }
             return _transactionRepository.CreateTransaction(transaction);
         }
 
         public bool DeleteAccount(int id)
         {
-            return _accountRepository.DeleteAccount(id);
+            if (!_accountRepository.AccountExists(id))
+            {
+                // Transaction not found to delete.
+                return false;
+            }
+            else
+            {
+                // Delete the transaction from records.
+                _accountRepository.DeleteAccount(id);
+                return true;
+            }
         }
 
-        public bool DeleteTransaction(Account account, int id)
+        public bool DeleteTransaction(int id)
         {
-            return _transactionRepository.DeleteTransaction(account, id);
-        }
-
-        public Account GetAccount(int id)
-        {
-            return _accountRepository.GetAccount(id);
-        }
-
-        public IEnumerable<Account> GetAccounts()
-        {
-            return _accountRepository.GetAccounts();
+            if (!_transactionRepository.TransactionExists(id))
+            {
+                // Transaction not found to delete.
+                return false;
+            }
+            else
+            {
+                // Delete the transaction from records.
+                _transactionRepository.DeleteTransaction(id);
+                return true;
+            }
         }
 
         public IEnumerable<Transactions> GetAllTransactions()
@@ -58,32 +66,136 @@ namespace Banker.Services
             return _transactionRepository.GetAllTransactions();
         }
 
-        public IEnumerable<Transactions> GetAllTransactionsForAccount(Account account)
+        public IEnumerable<Transactions> GetAllTransactionsForAccount(int accountId)
         {
-            return _transactionRepository.GetAllTransactionsForAccount(account);
+            if (!_accountRepository.AccountExists(accountId))
+            {
+                return null;
+            }
+            var accountFound = _accountRepository.GetAccount(accountId);
+            return accountFound.Transactions;
         }
 
-        public Transactions GetTransaction(Account account, int id)
+        public Transactions GetTransaction(int id)
         {
-            return _transactionRepository.GetTransaction(account, id);
+            return _transactionRepository.GetTransaction(id);
         }
 
-        public Account WithdrawlFromAccount(Account account, Transactions transactions)
+        // Account portion of the BankService.
+
+        public Account WithdrawlFromAccount(int accountId, Transactions transaction)
         {
-            return null;
+            if (!_accountRepository.AccountExists(accountId))
+            {
+                // The account doesn't exist. 
+                return null;
+            }
+            else
+            {
+                var foundAccount = _accountRepository.GetAccount(accountId);
+
+                // Create transaction with status of Pending.
+                transaction.TransactionStatus = "Pending";
+                _transactionRepository.CreateTransaction(transaction);
+
+                // Check if the account can withdraw the amount, update accordingly
+                if(foundAccount.Balance >= transaction.TransactionAmount)
+                {
+                    foundAccount.Balance = foundAccount.Balance - transaction.TransactionAmount;
+                    _accountRepository.UpdateAccount(foundAccount);
+                    _transactionRepository.UpdateTransaction(transaction.TransactionId, "Completed");
+                }
+                else
+                {
+                    _transactionRepository.UpdateTransaction(transaction.TransactionId, "Failed");
+                }
+
+                return foundAccount;
+            }
         }
 
-        public Account DepositIntoAccount(Account account, Transactions transactions)
+        public Account DepositIntoAccount(int accountId, Transactions transaction)
         {
-            throw new NotImplementedException();
+            if (!_accountRepository.AccountExists(accountId))
+            {
+                // The account doesn't exist. 
+                return null;
+            }
+            else
+            {
+                var foundAccount = _accountRepository.GetAccount(accountId);
+
+                // Create transaction with status of Pending.
+                transaction.TransactionStatus = "Pending";
+                var pending = _transactionRepository.CreateTransaction(transaction);
+
+                // Transaction was created. Update account and transactions.
+                if (_transactionRepository.TransactionExists(pending.TransactionId))
+                {
+                    foundAccount.Balance = foundAccount.Balance + transaction.TransactionAmount;
+                    _accountRepository.UpdateAccount(foundAccount);
+                    _transactionRepository.UpdateTransaction(pending.TransactionId, "Completed");
+                    return foundAccount;
+                }
+
+                // Failure case.
+                _transactionRepository.UpdateTransaction(transaction.TransactionId, "Failed");
+                return null;
+            }
         }
 
-        public bool UpdateTransaction(Account account, int id)
+        public Account GetAccount(int id)
         {
-            throw new NotImplementedException();
+            if (!_accountRepository.AccountExists(id))
+            {
+                // The account couldn't be found.
+                return null;
+            }
+            else
+            {
+                return _accountRepository.GetAccount(id);
+            }
+        }
+
+        public IEnumerable<Account> GetAccounts()
+        {
+            return _accountRepository.GetAccounts();
+        }
+
+        public Account CreateAccount(Account account)
+        {
+            if (_accountRepository.AccountExists(account.AccountId))
+            {
+                // The account ID already exists and this is bad.
+                return null;
+            }
+            else
+            {
+                return _accountRepository.CreateAccount(account);
+            }
+        }
+
+        public bool AccountExists(int id)
+        {
+            return _accountRepository.AccountExists(id);
         }
 
         public Account UpdateAccount(Account account)
+        {
+            // The account doesn't exist to update.
+            if (!_accountRepository.AccountExists(account.AccountId))
+            {
+                return null;
+            }
+            return _accountRepository.UpdateAccount(account);
+        }
+
+        public string LogIn(string username, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool logout(string username)
         {
             throw new NotImplementedException();
         }

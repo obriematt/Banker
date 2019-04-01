@@ -21,3 +21,9 @@ $RECYCLE.BIN/
 # =========================
 # Operating System Files
 # =========================
+
+# Other files
+packages/
+bin/
+obj/
+.vs/
