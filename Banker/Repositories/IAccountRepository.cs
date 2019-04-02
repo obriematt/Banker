@@ -15,5 +15,6 @@ namespace Banker.Repositories
         Account CreateAccount(Account account);
         bool DeleteAccount(int id);
         Account UpdateAccount(Account account);
+        int? LogIntoAccount(string username, string password);
     }
 }

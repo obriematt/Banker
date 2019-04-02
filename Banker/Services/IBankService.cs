@@ -16,8 +16,8 @@ namespace Banker.Services
         bool DeleteAccount(int id);
         Account WithdrawlFromAccount(int accountId, Transactions transactions);
         Account DepositIntoAccount(int accountId, Transactions transactions);
-        string LogIn(string username, string password);
-        bool logout(string username);
+        int? LogIn(string username, string password);
+        bool logout();
 
 
         // All the transaction services

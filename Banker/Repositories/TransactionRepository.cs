@@ -24,12 +24,6 @@ namespace Banker.Repositories
         {
             // Create a new transaction.
             _context.Transactions.Add(transaction);
-
-            // Update the account related to the Transaction.
-            var account = _context.Accounts.Find(transaction.AccountId);
-            account.Transactions.Add(transaction);
-            _context.Accounts.Update(account);
-
             _context.SaveChanges();
 
             return transaction;

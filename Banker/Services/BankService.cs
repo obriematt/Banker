@@ -190,14 +190,19 @@ namespace Banker.Services
             return _accountRepository.UpdateAccount(account);
         }
 
-        public string LogIn(string username, string password)
+        public int? LogIn(string username, string password)
         {
-            throw new NotImplementedException();
+            return _accountRepository.LogIntoAccount(username, password);
         }
 
-        public bool logout(string username)
+        public bool logout()
         {
-            throw new NotImplementedException();
+            return true;
+        }
+
+        private int keyGenerator(string first, string second)
+        {
+            return new { first, second }.GetHashCode();
         }
     }
 }

@@ -14,6 +14,12 @@ namespace Banker.Contexts
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Account>()
+                .HasAlternateKey(c => c.Username);
+        }
+
         public DbSet<Account> Accounts { get; set; }
 
         public DbSet<Transactions> Transactions { get; set; }

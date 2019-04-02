@@ -12,6 +12,10 @@ namespace Banker.Models
         [Key]
         public int AccountId { get; set; }
 
+        public string Username { get; set; }
+
+        public string Password { get; set; }
+
         // Account number
         public int AccountNumber { get; set; }
 

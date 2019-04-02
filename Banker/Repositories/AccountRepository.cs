@@ -71,7 +71,7 @@ namespace Banker.Repositories
         // Update
         public Account UpdateAccount(Account account)
         {
-            if (_context.Accounts.Find(account) != null)
+            if (_context.Accounts.Find(account.AccountId) != null)
             {
                 _context.Accounts.Update(account);
                 _context.SaveChanges();
@@ -80,6 +80,23 @@ namespace Banker.Repositories
             else
             {
                 return null;
+            }
+        }
+
+        public int? LogIntoAccount(string username, string password)
+        {
+            Account account = _context.Accounts.Where(x => x.Username.Equals(username)).FirstOrDefault();
+            if(account == null)
+            {
+                return null;
+            }
+            else if(account.Password != password)
+            {
+                return null;
+            }
+            else
+            {
+                return account.AccountId;
             }
         }
     }
