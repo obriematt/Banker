@@ -169,6 +169,10 @@ namespace Banker.Services
                 // The account ID already exists and this is bad.
                 return null;
             }
+            else if(!ValidUsername(account.Username))
+            {
+                return null;
+            }
             else
             {
                 return _accountRepository.CreateAccount(account);
@@ -195,14 +199,19 @@ namespace Banker.Services
             return _accountRepository.LogIntoAccount(username, password);
         }
 
-        public bool logout()
+        public bool Logout()
         {
             return true;
         }
 
-        private int keyGenerator(string first, string second)
+        private bool ValidUsername(string username)
         {
-            return new { first, second }.GetHashCode();
+            IEnumerable<Account> accounts = _accountRepository.GetAccounts();
+            if(!accounts.Where(x => x.Username.Equals(username)).Any())
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

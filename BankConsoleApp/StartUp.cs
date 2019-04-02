@@ -25,28 +25,9 @@ namespace BankConsoleApp
             return bankerService;
         }
 
-        public static void CreateDefaultAccounts(IBankService bankService)
+        public static void CreatePreconfiguredAccounts(IBankService bankService)
         {
-            // Default account one
-            Account firstAccount = new Account()
-            {
-                AccountId = 01,
-                AccountNumber = 007,
-                AccountHolder = "Megan",
-                SecondaryHolder = null,
-                Balance = 1000000
-            };
-            bankService.CreateAccount(firstAccount);
-
-            Account secondAccount = new Account()
-            {
-                AccountId = 02,
-                AccountNumber = 006,
-                AccountHolder = "Matthew",
-                SecondaryHolder = null,
-                Balance = 10
-            };
-            bankService.CreateAccount(secondAccount);
+            HelperFunctions.CreateDefaultAccounts(bankService);
         }
     }
 }
