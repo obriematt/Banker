@@ -1,77 +1,57 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Unity;
-using FakeItEasy;
+﻿using System;
 using Banker.Repositories;
 using Banker.Services;
 using Banker.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit;
+using Banker.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankerTest
 {
-    [TestFixture]
-    class BankServiceTest : IDisposable
+    public class BankServiceTest
     {
-        IUnityContainer _unityContainer;
         private static readonly Random random = new Random();
+        public ServiceProvider ServiceProvider { get; }
 
-        [OneTimeSetUp]
-        public void SetUp()
+        public BankServiceTest()
         {
-            _unityContainer = new UnityContainer();
+            ServiceCollection services = new ServiceCollection();
+            services.AddSingleton<IAccountRepository, AccountRepository>()
+                .AddSingleton<ITransactionRepository, TransactionRepository>()
+                .AddSingleton<IBankService, BankService>()
+                .AddDbContext<BankLedgerContext>(opt => opt.UseInMemoryDatabase("Bank Ledger"));
+            ServiceProvider = services.BuildServiceProvider();
         }
 
-        [OneTimeTearDown]
-        public void Teardown()
-        {
-            Dispose();
-        }
-
-        public void Dispose()
-        {
-            if(_unityContainer != null)
-            {
-                _unityContainer.Dispose();
-                _unityContainer = null;
-            }
-        }
-
-        [Test]
+        [Fact]
         public void TestCreateAccount()
         {
-            IUnityContainer child = _unityContainer.CreateChildContainer();
-            IAccountRepository accountRespository = child.Resolve<IAccountRepository>();
-            ITransactionRepository transactionRepository = child.Resolve<ITransactionRepository>();
-            IBankService bankService = child.Resolve<BankService>();
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
 
+            // Create test account and add to the service
             Account account = CreateTestAccount();
             bankService.CreateAccount(account);
 
-            Assert.AreEqual(account, bankService.GetAccount(account.AccountId));
+            // verify that the account was added.
+            Assert.Equal(account, bankService.GetAccount(account.AccountId));
         }
 
-        [Test]
+        [Fact]
         public void TestCreateInvalidAccount()
         {
-            IUnityContainer child = _unityContainer.CreateChildContainer();
-            IAccountRepository accountRespository = child.Resolve<IAccountRepository>();
-            ITransactionRepository transactionRepository = child.Resolve<ITransactionRepository>();
-            IBankService bankService = child.Resolve<BankService>();
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
 
             Account account = CreateTestAccount();
             bankService.CreateAccount(account);
 
-            Assert.IsNull(bankService.CreateAccount(account));
+            Assert.Null(bankService.CreateAccount(account));
         }
 
-        [Test]
+        [Fact]
         public void TestWithdrawFromAccount()
         {
-            IUnityContainer child = _unityContainer.CreateChildContainer();
-            IAccountRepository accountRespository = child.Resolve<IAccountRepository>();
-            ITransactionRepository transactionRepository = child.Resolve<ITransactionRepository>();
-            IBankService bankService = child.Resolve<BankService>();
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
 
             Account account = CreateTestAccount();
             bankService.CreateAccount(account);
@@ -79,16 +59,13 @@ namespace BankerTest
             double expectedBalance = account.Balance - transactions.TransactionAmount;
             bankService.WithdrawlFromAccount(account.AccountId, transactions);
 
-            Assert.AreEqual(account.Balance, expectedBalance);
+            Assert.Equal(account.Balance, expectedBalance);
         }
 
-        [Test]
+        [Fact]
         public void TestOverWithdrawFromAccount()
         {
-            IUnityContainer child = _unityContainer.CreateChildContainer();
-            IAccountRepository accountRespository = child.Resolve<IAccountRepository>();
-            ITransactionRepository transactionRepository = child.Resolve<ITransactionRepository>();
-            IBankService bankService = child.Resolve<BankService>();
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
 
             Account account = CreateTestAccount();
             bankService.CreateAccount(account);
@@ -98,13 +75,10 @@ namespace BankerTest
             bankService.WithdrawlFromAccount(account.AccountId, transactions);
         }
 
-        [Test]
+        [Fact]
         public void TestDepositIntoAccount()
         {
-            IUnityContainer child = _unityContainer.CreateChildContainer();
-            IAccountRepository accountRespository = child.Resolve<IAccountRepository>();
-            ITransactionRepository transactionRepository = child.Resolve<ITransactionRepository>();
-            IBankService bankService = child.Resolve<BankService>();
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
 
             Account account = CreateTestAccount();
             bankService.CreateAccount(account);
@@ -112,7 +86,7 @@ namespace BankerTest
             double expectedBalance = account.Balance + transactions.TransactionAmount;
             bankService.DepositIntoAccount(account.AccountId, transactions);
 
-            Assert.AreEqual(account.Balance, expectedBalance);
+            Assert.Equal(account.Balance, expectedBalance);
         }
 
         private Account CreateTestAccount()

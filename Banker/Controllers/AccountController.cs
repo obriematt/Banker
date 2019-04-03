@@ -24,19 +24,9 @@ namespace Banker.Controllers
             _bankService = bankService;
         }
 
-        [HttpPost]
-        public Task<ActionResult<Account>> Login()
-        {
-            return null;
-        }
-
-        [HttpDelete]
-        public Task<IActionResult> Logout()
-        {
-            return null;
-        }
-
         [HttpPatch("withdraw/{id}")]
+        [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Account> WithFromAccount(int accountId, [FromBody] Transactions transaction)
         {
             var withdrawCreated = _bankService.WithdrawlFromAccount(accountId, transaction);
@@ -48,6 +38,8 @@ namespace Banker.Controllers
         }
 
         [HttpPatch("deposit/{id}")]
+        [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Account> DepositIntoAccount(int accountId, [FromBody] Transactions transaction)
         {
             var depositCreated = _bankService.DepositIntoAccount(accountId, transaction);
@@ -59,6 +51,8 @@ namespace Banker.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Account> ViewAccountInformation(int id)
         {
             var accountFound = _bankService.GetAccount(id);
@@ -71,6 +65,8 @@ namespace Banker.Controllers
         }
 
         [HttpGet("transactions/{id}")]
+        [ProducesResponseType(typeof(IEnumerable<Transactions>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<IEnumerable<Transactions>> ViewTransactionHistoryForAccount(int accountId)
         {
             var transactions = _bankService.GetAllTransactionsForAccount(accountId);

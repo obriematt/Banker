@@ -10,13 +10,13 @@ namespace BankConsoleApp
         internal static void PrettyDisplayAccount(Account account)
         {
             Console.WriteLine();
-            Console.WriteLine("The account number is :" + account.AccountNumber);
-            Console.WriteLine("The primary holder of the account is : " + account.AccountHolder);
+            Console.WriteLine($"The account number is : {account.AccountNumber}");
+            Console.WriteLine($"The primary holder of the account is : {account.AccountHolder}");
             if (account.SecondaryHolder != null)
             {
-                Console.WriteLine("The secondary holder of the account is : " + account.SecondaryHolder);
+                Console.WriteLine($"The secondary holder of the account is : {account.SecondaryHolder}");
             }
-            Console.WriteLine("The account balance is : " + account.Balance);
+            Console.WriteLine($"The account balance is : {account.Balance}");
             Console.WriteLine();
         }
 
@@ -27,10 +27,10 @@ namespace BankConsoleApp
                 foreach (Transactions transactionsToShow in transactions)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("The type of the transaction: " + transactionsToShow.TransactionType);
-                    Console.WriteLine("The status of the transaction: " + transactionsToShow.TransactionStatus);
-                    Console.WriteLine("The amount of the transaction: " + transactionsToShow.TransactionAmount);
-                    Console.WriteLine("The time of the transaction: " + transactionsToShow.TimeOfTransaction);
+                    Console.WriteLine($"The type of the transaction: {transactionsToShow.TransactionType}");
+                    Console.WriteLine($"The status of the transaction: {transactionsToShow.TransactionStatus}");
+                    Console.WriteLine($"The amount of the transaction: {transactionsToShow.TransactionAmount}");
+                    Console.WriteLine($"The time of the transaction: {transactionsToShow.TimeOfTransaction}");
                     Console.WriteLine();
                 }
             }
@@ -64,7 +64,7 @@ namespace BankConsoleApp
         internal static void DisplayBalance(Account account)
         {
             Console.WriteLine();
-            Console.WriteLine("The account balance for " + account.AccountHolder + " is: " + account.Balance);
+            Console.WriteLine($"The account balance for {account.AccountHolder} is {account.Balance}");
             Console.WriteLine();
         }
 

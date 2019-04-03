@@ -1,6 +1,7 @@
 ﻿using Banker.Contexts;
 using Banker.Models;
 using Banker.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,9 @@ namespace Banker.Controllers
             _bankService = bankService;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
+        [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Account> CreateAccount([FromBody] Account account)
         {
             var accountCreated = _bankService.CreateAccount(account);
@@ -30,10 +33,12 @@ namespace Banker.Controllers
             {
                 return BadRequest();
             }
-            return accountCreated;
+            return Ok(accountCreated);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<bool> DeleteAccount(int id)
         {
             var accountDeleted = _bankService.DeleteAccount(id);
@@ -45,6 +50,8 @@ namespace Banker.Controllers
         }
 
         [HttpGet("transactions")]
+        [ProducesResponseType(typeof(IEnumerable<Transactions>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<IEnumerable<Transactions>> ViewBankTransactionHistory()
         {
             var fullTransactionHistory = _bankService.GetAllTransactions();
@@ -56,6 +63,8 @@ namespace Banker.Controllers
         }
 
         [HttpGet("accounts")]
+        [ProducesResponseType(typeof(IEnumerable<Account>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<IEnumerable<Account>> ViewAllAccounts()
         {
             var allAccounts = _bankService.GetAccounts();

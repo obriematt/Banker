@@ -10,6 +10,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
 using System.Reflection;
 using Banker.Contexts;
+using Banker.Services;
+using Banker.Repositories;
 
 namespace Banker
 {
@@ -30,6 +32,10 @@ namespace Banker
             services.AddDbContext<BankLedgerContext>(opt =>
                 opt.UseInMemoryDatabase("Bank Ledger"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddTransient<IBankService, BankService>()
+                .AddTransient<IAccountRepository, AccountRepository>()
+                .AddTransient<ITransactionRepository, TransactionRepository>();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
