@@ -51,6 +51,7 @@ namespace Banker.Repositories
             else
             {
                 _context.Accounts.Remove(account);
+                _context.SaveChanges();
                 return true;
             }
         }

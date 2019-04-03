@@ -41,8 +41,7 @@ namespace Banker.Services
             else
             {
                 // Delete the transaction from records.
-                _accountRepository.DeleteAccount(id);
-                return true;
+                return _accountRepository.DeleteAccount(id);    
             }
         }
 
@@ -56,8 +55,7 @@ namespace Banker.Services
             else
             {
                 // Delete the transaction from records.
-                _transactionRepository.DeleteTransaction(id);
-                return true;
+                return _transactionRepository.DeleteTransaction(id);
             }
         }
 
@@ -207,7 +205,7 @@ namespace Banker.Services
         private bool ValidUsername(string username)
         {
             IEnumerable<Account> accounts = _accountRepository.GetAccounts();
-            if(!accounts.Where(x => x.Username.Equals(username)).Any())
+            if(!accounts.Any(x => x.Username.Equals(username)))
             {
                 return true;
             }

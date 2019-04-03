@@ -27,7 +27,7 @@ namespace Banker.Controllers
         [HttpPatch("withdraw/{id}")]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Account> WithFromAccount(int accountId, [FromBody] Transactions transaction)
+        public ActionResult<Account> WithdrawFromAccount(int accountId, [FromBody] Transactions transaction)
         {
             var withdrawCreated = _bankService.WithdrawlFromAccount(accountId, transaction);
             if(withdrawCreated == null)
