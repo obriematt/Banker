@@ -126,19 +126,12 @@ namespace Banker.Services
                 // Create transaction with status of Pending.
                 transaction.TransactionStatus = "Pending";
                 var pending = _transactionRepository.CreateTransaction(transaction);
+                foundAccount.Balance = foundAccount.Balance + transaction.TransactionAmount;
+                _accountRepository.UpdateAccount(foundAccount);
 
-                // Transaction was created. Update account and transactions.
-                if (_transactionRepository.TransactionExists(pending.TransactionId))
-                {
-                    foundAccount.Balance = foundAccount.Balance + transaction.TransactionAmount;
-                    _accountRepository.UpdateAccount(foundAccount);
-                    _transactionRepository.UpdateTransaction(pending.TransactionId, "Completed");
-                    return foundAccount;
-                }
 
-                // Failure case.
-                _transactionRepository.UpdateTransaction(transaction.TransactionId, "Failed");
-                return null;
+                _transactionRepository.UpdateTransaction(pending.TransactionId, "Completed");
+                return foundAccount;
             }
         }
 

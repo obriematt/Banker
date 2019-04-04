@@ -27,6 +27,7 @@ namespace Banker.Repositories
             _context.SaveChanges();
 
             return transaction;
+            
         }
 
         // Delete 
@@ -79,9 +80,9 @@ namespace Banker.Repositories
         {
             if (_context.Transactions.Find(id) == null)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
             
         }
 

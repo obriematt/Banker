@@ -14,7 +14,7 @@ namespace BankConsoleApp
         {
             Transactions transactions = new Transactions()
             {
-                TransactionId = 0,
+                TransactionId = random.Next(),
                 AccountId = accountId,
                 TimeOfTransaction = DateTime.Now,
                 TransactionAmount = amount,

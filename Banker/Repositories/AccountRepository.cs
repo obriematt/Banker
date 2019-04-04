@@ -26,8 +26,7 @@ namespace Banker.Repositories
             {
                 return false;
             }
-            return true;
-            
+            return true;       
         }
 
         // Create
@@ -37,7 +36,7 @@ namespace Banker.Repositories
 
             _context.SaveChanges();
 
-            return account;
+            return account;          
         }
 
         // Delete

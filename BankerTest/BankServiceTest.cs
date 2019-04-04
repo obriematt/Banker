@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Banker.Contexts;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BankerTest
 {
@@ -30,7 +32,7 @@ namespace BankerTest
             IBankService bankService = ServiceProvider.GetService<IBankService>();
 
             // Create test account and add to the service
-            Account account = CreateTestAccount();
+            Account account = CreateTestAccount("username", "password");
             bankService.CreateAccount(account);
 
             // verify that the account was added.
@@ -42,7 +44,7 @@ namespace BankerTest
         {
             IBankService bankService = ServiceProvider.GetService<IBankService>();
 
-            Account account = CreateTestAccount();
+            Account account = CreateTestAccount("username", "password");
             bankService.CreateAccount(account);
 
             Assert.Null(bankService.CreateAccount(account));
@@ -53,7 +55,7 @@ namespace BankerTest
         {
             IBankService bankService = ServiceProvider.GetService<IBankService>();
 
-            Account account = CreateTestAccount();
+            Account account = CreateTestAccount("username", "password");
             bankService.CreateAccount(account);
             Transactions transactions = CreateTestWithdrawTransaction(account, 100);
             double expectedBalance = account.Balance - transactions.TransactionAmount;
@@ -69,7 +71,7 @@ namespace BankerTest
             string expected = "Failed";
             double originalBalance = 200.0;
 
-            Account account = CreateTestAccount();
+            Account account = CreateTestAccount("username", "password");
             bankService.CreateAccount(account);
             Transactions transactions = CreateTestWithdrawTransaction(account, 1000);
 
@@ -86,7 +88,7 @@ namespace BankerTest
         {
             IBankService bankService = ServiceProvider.GetService<IBankService>();
 
-            Account account = CreateTestAccount();
+            Account account = CreateTestAccount("username", "password");
             bankService.CreateAccount(account);
             Transactions transactions = CreateTestDepositTransaction(account, 100);
             double expectedBalance = account.Balance + transactions.TransactionAmount;
@@ -95,7 +97,61 @@ namespace BankerTest
             Assert.Equal(account.Balance, expectedBalance);
         }
 
-        private Account CreateTestAccount()
+        [Fact]
+        public void TestGetAllTransactionsForBank()
+        {
+            int expected = 2;
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
+            Account account = CreateTestAccount("username", "password");
+            bankService.CreateAccount(account);
+            Account account2 = CreateTestAccount("usernameone", "passwordtwo");
+
+            Transactions transactionsOne = CreateTestDepositTransaction(account, 100);
+            Transactions transactionsTwo = CreateTestWithdrawTransaction(account2, 5);
+            bankService.CreateTransaction(transactionsOne);
+            bankService.CreateTransaction(transactionsTwo);
+
+            List<Transactions> transactionList = bankService.GetAllTransactions().ToList();
+
+            Assert.Equal(expected, transactionList.Count);
+        }
+
+        [Fact]
+        public void TestGetAllTransactionsForAccount()
+        {
+            int expected = 1;
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
+            Account account = CreateTestAccount("username", "password");
+            bankService.CreateAccount(account);
+            Account account2 = CreateTestAccount("usernameone", "passwordtwo");
+
+            Transactions transactionsOne = CreateTestDepositTransaction(account, 100);
+            Transactions transactionsTwo = CreateTestDepositTransaction(account2, 100);
+            bankService.CreateTransaction(transactionsOne);
+            bankService.CreateTransaction(transactionsTwo);
+
+            List<Transactions> transactionList = bankService.GetAllTransactionsForAccount(account.AccountId).ToList();
+
+            Assert.Equal(expected, transactionList.Count);
+        }
+
+        [Fact]
+        public void GetAccountById()
+        {
+            IBankService bankService = ServiceProvider.GetService<IBankService>();
+            Account account = CreateTestAccount("username", "password");
+            bankService.CreateAccount(account);
+            Account account2 = CreateTestAccount("usernameone", "passwordtwo");
+            bankService.CreateAccount(account2);
+
+            Account actualAccountOne = bankService.GetAccount(account.AccountId);
+            Account actualAccounTwo = bankService.GetAccount(account2.AccountId);
+
+            Assert.Equal(account, actualAccountOne);
+            Assert.Equal(account2, actualAccounTwo);
+        }
+
+        private Account CreateTestAccount(string username, string password)
         {
             Account account = new Account()
             {
@@ -104,8 +160,8 @@ namespace BankerTest
                 AccountHolder = "Default One",
                 SecondaryHolder = "No one",
                 Balance = 200.0,
-                Password = "password",
-                Username = "username"
+                Password = password,
+                Username = username
             };
             return account;
         }
