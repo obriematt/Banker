@@ -11,8 +11,8 @@ namespace BankConsoleApp
         WithdrawFromAccount = 3,
         DepositIntoAccount = 4,
         SeeTransactionHistory = 5,
-        LogOut = 6,
-        LogIn = 7,
-        CreateAccount = 8
+        CreateAccount = 6,
+        LogOut = 7,
+        LogIn = 8
     }
 }

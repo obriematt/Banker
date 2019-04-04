@@ -171,6 +171,10 @@ namespace Banker.Services
             {
                 return null;
             }
+            else if (string.IsNullOrEmpty(account.Password))
+            {
+                return null;
+            }
             else
             {
                 return _accountRepository.CreateAccount(account);
@@ -204,12 +208,19 @@ namespace Banker.Services
 
         private bool ValidUsername(string username)
         {
+            if (string.IsNullOrEmpty(username))
+            {
+                return false;
+            }
             IEnumerable<Account> accounts = _accountRepository.GetAccounts();
-            if(!accounts.Any(x => x.Username.Equals(username)))
+            if (accounts.Any(x => x.Username.Equals(username)))
+            {
+                return false;
+            }
+            else
             {
                 return true;
             }
-            return false;
         }
     }
 }

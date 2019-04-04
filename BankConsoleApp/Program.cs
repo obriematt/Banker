@@ -29,18 +29,7 @@ namespace BankConsoleApp
                 Account newAccount = null;
                 while (newAccount == null)
                 {
-                    Console.WriteLine("Enter a username: ");
-                    username = Console.ReadLine();
-                    Console.WriteLine("Enter a password: ");
-                    password = Console.ReadLine();
-                    Console.WriteLine("Enter the primary account holder : ");
-                    string accountHolder = Console.ReadLine();
-                    Account account = HelperFunctions.CreateAccountObject(username, password, accountHolder);
-                    newAccount = bankService.CreateAccount(account);
-                    if(newAccount == null)
-                    {
-                        Console.WriteLine("Invalid account, please try again.");
-                    }
+                    newAccount = DisplayMessaging.CreateNewAccountFromUser(bankService);
                 }
             }
 
@@ -115,6 +104,11 @@ namespace BankConsoleApp
                         case Selections.SeeTransactionHistory:
                             IEnumerable<Transactions> transactionHistory = bankService.GetAllTransactionsForAccount((int)userKey);
                             DisplayMessaging.PrettyDisplayTransactions(transactionHistory);
+                            break;
+
+                        case Selections.CreateAccount:
+                            Account accountToCreate = DisplayMessaging.CreateNewAccountFromUser(bankService);
+                            Account createdAccount = bankService.CreateAccount(accountToCreate);
                             break;
 
                         case Selections.LogOut:

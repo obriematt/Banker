@@ -24,6 +24,12 @@ namespace Banker.Controllers
             _bankService = bankService;
         }
 
+        /// <summary>
+        /// Withdrawal transaction creation and action upon an account
+        /// </summary>
+        /// <param name="accountId">The unique account ID number</param>
+        /// <param name="transaction">The withdrawal transaction taking place on the account</param>
+        /// <returns>The full account object</returns>
         [HttpPatch("withdraw/{id}")]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,6 +43,12 @@ namespace Banker.Controllers
             return withdrawCreated;
         }
 
+        /// <summary>
+        /// Deposit transaction creation and action upon an account
+        /// </summary>
+        /// <param name="accountId">The unique account ID number</param>
+        /// <param name="transaction">The deposit transaction taking place on the account</param>
+        /// <returns>The full account object</returns>
         [HttpPatch("deposit/{id}")]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -50,6 +62,11 @@ namespace Banker.Controllers
             return depositCreated;
         }
 
+        /// <summary>
+        /// Views the properties of an account
+        /// </summary>
+        /// <param name="id">The unique account ID number</param>
+        /// <returns>Account information</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -64,6 +81,11 @@ namespace Banker.Controllers
             return accountFound;
         }
 
+        /// <summary>
+        /// Views the transaction history for an account
+        /// </summary>
+        /// <param name="accountId">The unique account ID number</param>
+        /// <returns>Transaction list for an account</returns>
         [HttpGet("transactions/{id}")]
         [ProducesResponseType(typeof(IEnumerable<Transactions>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

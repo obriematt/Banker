@@ -23,6 +23,11 @@ namespace Banker.Controllers
             _bankService = bankService;
         }
 
+        /// <summary>
+        /// Creates a new account
+        /// </summary>
+        /// <param name="account">The account object to add to the bank</param>
+        /// <returns>Boolean value for success or failure</returns>
         [HttpPost("create")]
         [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,6 +41,11 @@ namespace Banker.Controllers
             return Ok(accountCreated);
         }
 
+        /// <summary>
+        /// Deletes an account from the bank
+        /// </summary>
+        /// <param name="id">The unique account ID number</param>
+        /// <returns>Boolean value for successful or failure</returns>
         [HttpDelete("delete/{id}")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,6 +59,10 @@ namespace Banker.Controllers
             return accountDeleted;
         }
 
+        /// <summary>
+        /// View all transaction history for all accounts
+        /// </summary>
+        /// <returns>List of Transactions</returns>
         [HttpGet("transactions")]
         [ProducesResponseType(typeof(IEnumerable<Transactions>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,6 +76,10 @@ namespace Banker.Controllers
             return fullTransactionHistory.ToList();
         }
 
+        /// <summary>
+        /// View all accounts and information
+        /// </summary>
+        /// <returns>List of Accounts</returns>
         [HttpGet("accounts")]
         [ProducesResponseType(typeof(IEnumerable<Account>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

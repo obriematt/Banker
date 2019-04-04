@@ -66,13 +66,19 @@ namespace BankerTest
         public void TestOverWithdrawFromAccount()
         {
             IBankService bankService = ServiceProvider.GetService<IBankService>();
+            string expected = "Failed";
+            double originalBalance = 200.0;
 
             Account account = CreateTestAccount();
             bankService.CreateAccount(account);
-            Transactions transactions = CreateTestWithdrawTransaction(account, 100);
+            Transactions transactions = CreateTestWithdrawTransaction(account, 1000);
 
-            // Something should happen here?
             bankService.WithdrawlFromAccount(account.AccountId, transactions);
+            Transactions failedTransaction = bankService.GetTransaction(transactions.TransactionId);
+            
+
+            Assert.Equal(failedTransaction.TransactionStatus, expected);
+            Assert.Equal(account.Balance, originalBalance);
         }
 
         [Fact]
@@ -108,7 +114,7 @@ namespace BankerTest
         {
             Transactions transactions = new Transactions()
             {
-                TransactionId = 0,
+                TransactionId = 01,
                 AccountId = account.AccountId,
                 TimeOfTransaction = DateTime.Now,
                 TransactionAmount = amount,
@@ -122,7 +128,7 @@ namespace BankerTest
         {
             Transactions transactions = new Transactions()
             {
-                TransactionId = 0,
+                TransactionId = 02,
                 AccountId = account.AccountId,
                 TimeOfTransaction = DateTime.Now,
                 TransactionAmount = amount,

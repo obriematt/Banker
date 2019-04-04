@@ -1,4 +1,5 @@
 ﻿using Banker.Models;
+using Banker.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -47,6 +48,12 @@ namespace BankConsoleApp
             Console.WriteLine("Welcome to the world's great bankledger application.");
             Console.WriteLine("Please log into your account");
             Console.WriteLine("Please create an account to start or use one of the two default accounts.");
+            Console.WriteLine("Default one.");
+            Console.WriteLine("Username : username.");
+            Console.WriteLine("Password : password.");
+            Console.WriteLine("Default two.");
+            Console.WriteLine("Username : usernametwo.");
+            Console.WriteLine("Password : passwordtwo.");
             Console.WriteLine("Please type create to make a new account or press any key to skip");
         }
 
@@ -58,7 +65,8 @@ namespace BankConsoleApp
             Console.WriteLine("Press 3 to Withdraw from your account");
             Console.WriteLine("Press 4 to Deposit into your account");
             Console.WriteLine("Press 5 to see your transaction history");
-            Console.WriteLine("Press 6 to logout");
+            Console.WriteLine("Press 6 to create a new account");
+            Console.WriteLine("Press 7 to logout");
         }
 
         internal static void DisplayBalance(Account account)
@@ -80,6 +88,28 @@ namespace BankConsoleApp
             Console.WriteLine();
             Console.WriteLine("The user credentials were incorrect");
             Console.WriteLine();
+        }
+
+        internal static Account CreateNewAccountFromUser(IBankService bankService)
+        {
+            string username = null;
+            string password = null;
+            Account newAccount = null;
+
+
+            Console.WriteLine("Enter a username: ");
+            username = Console.ReadLine();
+            Console.WriteLine("Enter a password: ");
+            password = Console.ReadLine();
+            Console.WriteLine("Enter the primary account holder : ");
+            string accountHolder = Console.ReadLine();
+            Account account = HelperFunctions.CreateAccountObject(username, password, accountHolder);
+            newAccount = bankService.CreateAccount(account);
+            if (newAccount == null)
+            {
+                Console.WriteLine("Invalid account, please try again.");
+            }
+            return newAccount;
         }
     }
 }
