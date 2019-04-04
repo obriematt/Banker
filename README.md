@@ -13,6 +13,7 @@ Bank Ledger Sample is three separate projects for a Bank Ledger Sample.
   - Two API routes for usage through a Manager or Regular account. Difference between the two not implemented.
   - Regular account allows for Withdrawal, Deposit, Transaction History, and Account Information.
   - Manager account allows for Creation and Deletion of Accounts, Bank Transaction history, and viewing all Accounts.
+  - Running the Banker project will direct to a Swagger documentation page to allow for testing of the API.
 
 # BankConsoleApp
 
